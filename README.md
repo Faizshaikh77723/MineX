@@ -159,7 +159,7 @@ ollama pull bge-m3
 
 ```bash
 cd C:\
-git clone https://github.com/<your-org>/MineX.git
+git clone https://github.com/Faizshaikh77723/MineX.git
 cd MineX
 ```
 
@@ -219,7 +219,7 @@ Built for the **Smart India Hackathon 2026** in collaboration with the **Ministr
 
 | Name | Role |
 |------|------|
-| _Your Name_ | _Role_ |
+| _Shaikh Mohammad Faiz_ | _AI/ML_ |
 | _Teammate_ | _Role_ |
 
 ---
