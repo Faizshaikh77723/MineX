@@ -219,8 +219,12 @@ Built for the **Smart India Hackathon 2026** in collaboration with the **Ministr
 
 | Name | Role |
 |------|------|
-| _Shaikh Mohammad Faiz_ | _AI/ML_ |
-| _Teammate_ | _Role_ |
+| _Shaikh Mohammad Faiz_ | _AI/ML(Leader)_ |
+| _Siddiqui Yasar_ | _Backend Developer_ |
+| _Aarush Gandhi_ | _Frontend Developer_ |
+| _Yukti Patel_ | _Research Analyst_ |
+| _Yatri Prajapati_ | _Data Analyst_ |
+| _Pranav Raval_ | _Database Manager_ |
 
 ---
 
