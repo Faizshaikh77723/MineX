@@ -1,0 +1,13 @@
+# Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Database and uploaded files (Do not upload government data to GitHub!)
+data/chromadb_store/
+data/uploads/
+data/generated_reports/
+*.pdf
+
+# Environment variables
+.env

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineX | Ministry of Coal Document Intelligence</title>
+    <!-- Marked.js to format markdown and tables -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/13.0.3/marked.min.js"></script>
+    
+    <!-- Poppins Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gov-blue: #0b3c5d;
+            --gov-dark: #1d2731;
+            --gov-gold: #d9b310;
+            --bg-page: #f4f6f9;
+            --surface: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #5a6268;
+            --border: #dcdfe3;
+            --saffron: #ff9933;
+            --green: #138808;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, input, button, textarea { 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { background-color: var(--bg-page); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        .national-strip { height: 5px; background: linear-gradient(90deg, var(--saffron) 33.3%, #ffffff 33.3%, #ffffff 66.6%, var(--green) 66.6%); }
+
+        header { background-color: var(--surface); border-bottom: 2px solid var(--gov-blue); padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .header-title h1 { font-size: 1.4rem; color: var(--gov-blue); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+        .header-title p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+        nav { background-color: var(--gov-blue); display: flex; padding: 0 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        nav button { background: none; border: none; color: #ffffff; padding: 14px 22px; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: background 0.2s; border-bottom: 3px solid transparent; }
+        nav button:hover { background-color: rgba(255,255,255,0.1); }
+        nav button.active { background-color: var(--gov-dark); border-bottom: 3px solid var(--gov-gold); font-weight: 600; }
+
+        main { flex: 1; padding: 30px 40px; max-width: 1400px; width: 100%; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .panel-header { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h2 { font-size: 1.25rem; color: var(--gov-blue); font-weight: 600; }
+
+        .home-hero {
+            background-image: linear-gradient(rgba(11, 60, 93, 0.85), rgba(11, 60, 93, 0.85)), url('image_4e3d50.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 60px 40px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .home-hero h2 { font-size: 2.2rem; color: #ffffff; margin-bottom: 15px; font-weight: 700; letter-spacing: 0.5px; }
+        .home-hero p { font-size: 1.1rem; max-width: 800px; margin: 0 auto; line-height: 1.7; color: #e2e8f0; font-weight: 300; }
+
+        .hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .feature-card { padding: 18px; border-left: 4px solid var(--gov-blue); background-color: #f8fafc; margin-bottom: 15px; border-radius: 0 4px 4px 0; }
+        .feature-card h3 { font-size: 1.05rem; color: var(--gov-blue); margin-bottom: 6px; font-weight: 600; }
+        .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+        .rag-layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; height: 680px; }
+        .sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .upload-dropzone { border: 2px dashed var(--border); background-color: var(--bg-page); padding: 20px; text-align: center; cursor: pointer; border-radius: 4px; font-size: 0.9rem; transition: 0.2s; }
+        .upload-dropzone:hover { border-color: var(--gov-blue); background-color: #f1f5f9; }
+
+        .btn { background-color: var(--gov-blue); color: #fff; border: none; padding: 10px 18px; font-size: 0.9rem; font-weight: 500; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .btn:hover { background-color: var(--gov-dark); }
+        .btn:disabled { background-color: var(--text-muted); cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-blue); color: var(--gov-blue); }
+        .btn-outline:hover { background: var(--gov-blue); color: #fff; }
+
+        .chat-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        
+        .message { max-width: 85%; padding: 14px 18px; border-radius: 6px; font-size: 0.95rem; line-height: 1.6; }
+        .message.user { align-self: flex-end; background-color: var(--gov-blue); color: #ffffff; border-bottom-right-radius: 0; }
+        .message.bot { align-self: flex-start; background-color: #f8fafc; border: 1px solid var(--border); border-bottom-left-radius: 0; }
+        
+        .chat-input-bar { border-top: 1px solid var(--border); padding: 16px 20px; display: flex; gap: 12px; background: var(--surface); }
+        .chat-input-bar input { flex: 1; padding: 12px 16px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.95rem; outline: none; }
+        .chat-input-bar input:focus { border-color: var(--gov-blue); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+        th { background-color: #f1f5f9; color: var(--gov-blue); font-weight: 600; }
+        details { margin-top: 10px; padding: 10px 12px; background: #edf2f7; border-radius: 4px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+        summary { cursor: pointer; font-weight: 600; color: var(--gov-blue); outline: none; }
+        pre { background: #1e293b; color: #f8fafc; padding: 12px; border-radius: 4px; overflow-x: auto; margin-top: 10px; font-family: monospace; font-size: 0.85rem; }
+
+        footer { background-color: var(--gov-dark); color: #a0aec0; text-align: center; padding: 16px; font-size: 0.85rem; margin-top: auto; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <div class="national-strip"></div>
+
+    <header>
+        <div class="header-title">
+            <h1>MineX • Document Intelligence Platform</h1>
+            <p>Ministry of Coal • Smart India Hackathon (SIH26023)</p>
+        </div>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" onclick="switchTab('home')">Home</button>
+        <button class="nav-btn" onclick="switchTab('rag')">MineX RAG</button>
+        <button class="nav-btn" onclick="switchTab('documents')">Uploaded Documents</button>
+        <button class="nav-btn" onclick="switchTab('about')">About Us</button>
+        <button class="nav-btn" onclick="switchTab('faqs')">FAQs</button>
+    </nav>
+
+    <main>
+        <!-- HOME TAB -->
+        <section id="tab-home" class="tab-content active">
+            <div class="home-hero">
+                <h2>National Coal Document Analysis System</h2>
+                <p>MineX is an enterprise-grade AI solution purpose-built for the Ministry of Coal to synthesize, verify, and extract actionable data from massive statutory reports, annual publications, and mine safety bulletins.</p>
+            </div>
+            
+            <div class="hero-grid">
+                <div>
+                    <div class="feature-card">
+                        <h3>100% On-Premise Sovereign AI</h3>
+                        <p>All embeddings and inference operate on private GPU hardware with no data egress to third-party cloud servers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Domain-Tuned QLoRA Architecture</h3>
+                        <p>Fine-tuned specifically on DGMS circulars, CIL subsidiary metrics, and statutory safety data to minimize hallucinations.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Autonomous Audit Report Synthesis</h3>
+                        <p>Distinguishes simple factual queries from full statutory compliance requests, structuring outputs into formal government executive summaries.</p>
+                    </div>
+                </div>
+                <div style="background-color: #f8fafc; border: 1px solid var(--border); padding: 24px; border-radius: 6px; height: fit-content;">
+                    <h3 style="color: var(--gov-blue); margin-bottom: 12px; font-weight: 600;">Quick Start</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
+                        Switch to the <strong>MineX RAG</strong> tab to query existing records or index a new PDF report to our vector database.
+                    </p>
+                    <button type="button" class="btn" onclick="switchTab('rag')" style="width: 100%; padding: 12px;">Open MineX Workspace →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MINEX RAG WORKSPACE -->
+        <section id="tab-rag" class="tab-content">
+            <div class="rag-layout">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <h3 style="color: var(--gov-blue); font-size: 1.1rem; font-weight: 600;">Document Intake</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Upload PDF reports to ingest directly into the local ChromaDB vector store.</p>
+                    
+                    <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                        <span id="uploadLabel" style="font-weight: 500;">📄 Click to Choose PDF</span>
+                        <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                    </div>
+                    <button type="button" class="btn" id="uploadBtn" onclick="handleUpload()">Upload & Vectorize</button>
+                    <div id="uploadStatus" style="font-size: 0.85rem; margin-top: 5px; font-weight: 500;"></div>
+                    
+                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+                    
+                    <h4 style="font-size: 0.9rem; color: var(--gov-blue); font-weight: 600;">Report Tools</h4>
+                    <button type="button" class="btn" style="background-color: #138808; margin-bottom: 8px;" onclick="triggerReportTool()">
+                        ⚡ Generate Statutory Report
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="printReport()">
+                        🖨️ Print View
+                    </button>
+                </div>
+
+                <!-- Chat Console -->
+                <div class="chat-panel">
+                    <div class="chat-messages" id="chatBox">
+                        <div class="message bot">
+                            <strong>System Initialized.</strong><br>
+                            Hey! I am the MineX Assistant. If you have any queries, drop your document or simply type your question below.
+                        </div>
+                    </div>
+                    <div class="chat-input-bar">
+                        <input type="text" id="queryInput" placeholder="Ask a question or request a report (e.g. 'Give me a detailed safety report')...">
+                        <button type="button" class="btn" id="sendBtn" onclick="handleChat()">Send Query</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UPLOADED DOCUMENTS CATALOG -->
+        <section id="tab-documents" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Indexed Repository Documents</h2>
+                    <button type="button" class="btn btn-outline" onclick="loadDocuments()">↻ Refresh List</button>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                    Below is the verified inventory of statutory PDFs currently vectorized in the ChromaDB database.
+                </p>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Document Filename</th>
+                                <th>File Size (KB)</th>
+                                <th>Indexing Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docTableBody">
+                            <tr><td colspan="3">Loading document catalog...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT US -->
+        <section id="tab-about" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>About MineX Intelligence</h2>
+                </div>
+                <p style="line-height: 1.6; margin-bottom: 15px;">
+                    MineX was engineered under problem statement <strong>SIH26023</strong> to provide high-reliability, 
+                    verifiable AI synthesis for critical mining governance.
+                </p>
+                <h3 style="color: var(--gov-blue); margin: 20px 0 10px 0; font-weight: 600;">Technical Stack</h3>
+                <ul style="padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
+                    <li><strong>Embeddings:</strong> BAAI/bge-m3 (Dense-sparse multilingual semantic vectors)</li>
+                    <li><strong>Vector Store:</strong> ChromaDB with isolated metadata filtering</li>
+                    <li><strong>Language Model:</strong> Qwen 2.5 7B Instruct (Fine-tuned via QLoRA on T4 GPU)</li>
+                    <li><strong>Inference Engine:</strong> Local Ollama runtime in 4-bit quantization on Windows</li>
+                    <li><strong>Gateway:</strong> High-performance FastAPI with sliding conversational memory</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- FAQS -->
+        <section id="tab-faqs" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <h4 style="color: var(--gov-blue); margin-bottom: 6px; font-weight: 600;">1. How does MineX differ from public tools like ChatGPT?</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            MineX is 100% sovereign and air-gapped. No proprietary government documents are transmitted over the public internet. Furthermore, MineX uses a custom QLoRA adapter trained to cite sources and reject answering when evidence is missing.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--gov-blue); margin-bottom: 6px; font-weight: 600;">2. How does the system avoid hallucinations?</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            The model is constrained by strict prompt boundaries and fine-tuned on negative examples where insufficient context forces the output: <em>"I cannot determine this from my database."</em>
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--gov-blue); margin-bottom: 6px; font-weight: 600;">3. What type of queries require a full report?</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            Adding words like "report", "detailed", "summary", or "analyze" to your query will automatically activate the Autonomous Reporting Engine, producing structured Executive Summaries and source citations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        MineX Document Intelligence System • Ministry of Coal Initiative (SIH26023) • Prototype Edition
+    </footer>
+
+    <script>
+        const BACKEND_URL = (window.location.port === "5500") 
+            ? "http://127.0.0.1:8000" 
+            : window.location.origin;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'documents') {
+                loadDocuments();
+            }
+        }
+
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                document.getElementById('uploadLabel').textContent = fileInput.files[0].name;
+            }
+        });
+
+        async function handleUpload() {
+            if (!fileInput.files[0]) {
+                alert("Please select a PDF document first.");
+                return;
+            }
+
+            const btn = document.getElementById('uploadBtn');
+            const status = document.getElementById('uploadStatus');
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            btn.disabled = true;
+            status.textContent = "Processing and indexing document...";
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/upload-document`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    status.innerHTML = `<span style="color: green;">✔ ${data.message}</span>`;
+                } else {
+                    status.innerHTML = `<span style="color: red;">✖ ${data.detail}</span>`;
+                }
+            } catch (err) {
+                status.innerHTML = `<span style="color: red;">✖ Failed to connect to server at ${BACKEND_URL}</span>`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function loadDocuments() {
+            const tbody = document.getElementById('docTableBody');
+            tbody.innerHTML = `<tr><td colspan="3">Fetching repository files...</td></tr>`;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/documents`);
+                const data = await res.json();
+                
+                if (data.documents && data.documents.length > 0) {
+                    tbody.innerHTML = data.documents.map(d => `
+                        <tr>
+                            <td><strong>${d.filename}</strong></td>
+                            <td>${d.size_kb} KB</td>
+                            <td><span style="color: green; font-weight:600;">✔ ${d.status}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3">No documents ingested yet. Upload a PDF from the MineX RAG tab.</td></tr>`;
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="3" style="color:red;">Error loading document catalog. Ensure backend is running.</td></tr>`;
+            }
+        }
+
+        function triggerReportTool() {
+            const queryInput = document.getElementById('queryInput');
+            queryInput.value = "Generate a comprehensive statutory safety and production report based on all uploaded documents.";
+            handleChat();
+        }
+
+        async function handleChat() {
+            const input = document.getElementById('queryInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const query = input.value.trim();
+
+            if (!query) return;
+
+            renderMessage(query, 'user');
+            input.value = '';
+            sendBtn.disabled = true;
+            sendBtn.textContent = "Analyzing & Synthesizing...";
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    renderMessage(data.answer, 'bot', data.retrieved_context, data.download_url);
+                } else {
+                    renderMessage(`Error: ${data.detail}`, 'bot');
+                }
+            } catch (e) {
+                renderMessage(`Could not connect to MineX backend at ${BACKEND_URL}. Check terminal.`, 'bot');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Send Query";
+                input.focus();
+            }
+        }
+
+        function renderMessage(text, sender, context = null, downloadUrl = null) {
+            const chatBox = document.getElementById('chatBox');
+            const msg = document.createElement('div');
+            msg.className = `message ${sender}`;
+
+            if (sender === 'bot') {
+                msg.innerHTML = marked.parse(text);
+
+                if (downloadUrl) {
+                    const reportBadge = document.createElement('div');
+                    reportBadge.style.marginTop = "14px";
+                    reportBadge.style.padding = "12px";
+                    reportBadge.style.background = "#e8f5e9";
+                    reportBadge.style.border = "1px solid #c8e6c9";
+                    reportBadge.style.borderRadius = "4px";
+                    reportBadge.innerHTML = `
+                        <div style="font-weight: 600; color: #1b5e20; margin-bottom: 6px;">
+                            📑 Official Statutory Report Generated
+                        </div>
+                        <a href="${BACKEND_URL}${downloadUrl}" 
+                           target="_blank" 
+                           download 
+                           class="btn" 
+                           style="display: inline-block; background-color: #138808; text-decoration: none; font-size: 0.85rem; padding: 6px 14px;">
+                            📥 Download Official PDF Dossier
+                        </a>
+                    `;
+                    msg.appendChild(reportBadge);
+                }
+
+                if (context && context.trim().length > 0) {
+                    const details = document.createElement('details');
+                    details.innerHTML = `<summary>View Cited ChromaDB Sources</summary><pre>${context}</pre>`;
+                    msg.appendChild(details);
+                }
+            } else {
+                msg.textContent = text;
+            }
+
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('queryInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleChat();
+            }
+        });
+
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
